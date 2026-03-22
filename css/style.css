@@ -421,7 +421,7 @@ section {
     transform: translateY(-2px);
 }
 
-/* Simplified 3+3 Centered Grid Layout */
+/* 3+4 Centered Grid Layout with Icons */
 .mini-features-grid {
     display: flex;
     justify-content: center;
@@ -433,8 +433,8 @@ section {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 20px;
-    max-width: 800px;
+    gap: 25px;
+    max-width: 1000px;
     width: 100%;
 }
 
@@ -446,35 +446,48 @@ section {
     width: 100%;
 }
 
+/* First row - 3 cards */
+.mini-features-row:first-child .mini-feature-card {
+    flex: 0 0 auto;
+    width: 220px;
+}
+
+/* Second row - 4 cards */
+.mini-features-row:last-child .mini-feature-card {
+    flex: 0 0 auto;
+    width: 220px;
+}
+
 .mini-feature-card {
     background: var(--card-bg);
     padding: 25px 20px;
     border-radius: 12px;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     border: 1px solid var(--card-border);
-    height: 100px;
-    width: 220px;
+    min-height: 100px;
     display: flex;
     align-items: center;
     gap: 15px;
     backdrop-filter: blur(10px);
-    flex-shrink: 0;
+    box-shadow: var(--shadow);
 }
 
 .mini-feature-card:hover {
-    transform: translateY(-3px);
-    box-shadow: var(--shadow);
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-lg);
 }
 
 .mini-feature-card .feature-icon {
     width: 50px;
     height: 50px;
-    font-size: 1.3rem;
-    margin: 0;
-    flex-shrink: 0;
+    background: var(--accent-gradient);
+    border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
+    font-size: 1.5rem;
+    flex-shrink: 0;
+    color: white;
 }
 
 .mini-feature-card span {
@@ -482,6 +495,39 @@ section {
     font-size: 16px;
     color: var(--dark-text);
     line-height: 1.3;
+    flex: 1;
+}
+
+/* Responsive for tablet */
+@media (max-width: 1024px) {
+    .mini-features-row {
+        gap: 15px;
+    }
+    
+    .mini-features-row:first-child .mini-feature-card,
+    .mini-features-row:last-child .mini-feature-card {
+        width: 200px;
+    }
+}
+
+/* Responsive for mobile */
+@media (max-width: 768px) {
+    .mini-features-row {
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+    }
+    
+    .mini-features-row:first-child .mini-feature-card,
+    .mini-features-row:last-child .mini-feature-card {
+        width: 100%;
+        max-width: 280px;
+    }
+    
+    .mini-features-container {
+        gap: 15px;
+        padding: 0 15px;
+    }
 }
 
 /* Products Deep-Dive Section */
