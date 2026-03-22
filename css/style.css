@@ -128,26 +128,75 @@ section {
 
 /* Hero Section - Updated without image */
 /* Add to your hero section CSS */
+/* Simplified Glass Waves */
 .hero {
     padding: 180px 0 100px;
     text-align: center;
     position: relative;
     overflow: hidden;
-    background: linear-gradient(135deg, #000000 0%, #1a1a2e 50%, #16213e 100%);
-    background-size: 200% 200%;
-    animation: gradientShift 8s ease infinite;
+    background: linear-gradient(135deg, #0a0a2a 0%, #1a1a3a 100%);
 }
 
-@keyframes gradientShift {
-    0% {
-        background-position: 0% 50%;
+/* Main glass wave */
+.glass-wave-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at 20% 50%, 
+        rgba(0, 122, 255, 0.15) 0%, 
+        transparent 50%),
+        radial-gradient(circle at 80% 80%, 
+        rgba(0, 212, 255, 0.1) 0%, 
+        transparent 50%);
+    backdrop-filter: blur(12px);
+    animation: glassPulse 8s ease-in-out infinite;
+}
+
+/* Animated waves */
+.wave-bg {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='rgba(0,122,255,0.2)' fill-opacity='0.4' d='M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,122.7C672,117,768,139,864,154.7C960,171,1056,181,1152,170.7C1248,160,1344,128,1392,112L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E") repeat-x;
+    background-size: cover;
+    animation: waveSlide 12s linear infinite;
+    opacity: 0.6;
+}
+
+.wave-bg-2 {
+    bottom: 20px;
+    opacity: 0.3;
+    animation: waveSlide 18s linear infinite reverse;
+    background-size: cover;
+}
+
+@keyframes glassPulse {
+    0%, 100% {
+        backdrop-filter: blur(10px);
+        opacity: 0.8;
     }
     50% {
-        background-position: 100% 50%;
+        backdrop-filter: blur(15px);
+        opacity: 1;
+    }
+}
+
+@keyframes waveSlide {
+    0% {
+        background-position-x: 0;
     }
     100% {
-        background-position: 0% 50%;
+        background-position-x: 1440px;
     }
+}
+
+.hero-content {
+    position: relative;
+    z-index: 10;
 }
 
 .hero::before {
