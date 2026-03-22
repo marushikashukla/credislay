@@ -421,31 +421,37 @@ section {
     transform: translateY(-2px);
 }
 
-/* Updated Mini Features Grid Layout - 4 + 3 */
+/* Updated Mini Features Grid Layout - 4 + 3 - CENTERED LAST 3 */
 .mini-features-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 20px;
     margin-top: 40px;
     justify-items: center;
+    max-width: 1000px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
-/* First row: 4 cards (default behavior) */
-.mini-feature-card:nth-child(-n+4) {
-    /* These will automatically take 4 columns */
+/* First row: 4 cards - span 1 column each */
+.mini-feature-card:nth-child(1),
+.mini-feature-card:nth-child(2),
+.mini-feature-card:nth-child(3),
+.mini-feature-card:nth-child(4) {
+    grid-column: span 1;
 }
 
-/* Second row: 3 cards centered */
-.mini-features-grid .mini-feature-card:nth-child(5) {
-    grid-column: 2 / span 1;  /* Start at column 2 */
+/* Second row: 3 cards - CENTER THEM */
+.mini-feature-card:nth-child(5) {
+    grid-column: 2 / span 1;
 }
 
-.mini-features-grid .mini-feature-card:nth-child(6) {
-    grid-column: 3 / span 1;  /* Start at column 3 */
+.mini-feature-card:nth-child(6) {
+    grid-column: 3 / span 1;
 }
 
-.mini-features-grid .mini-feature-card:nth-child(7) {
-    grid-column: 4 / span 1;  /* Start at column 4 */
+.mini-feature-card:nth-child(7) {
+    grid-column: 4 / span 1;
 }
 
 .mini-feature-card {
