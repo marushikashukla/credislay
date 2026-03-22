@@ -2,17 +2,21 @@
 const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
 const navLinks = document.querySelector('.nav-links');
 
-mobileMenuBtn.addEventListener('click', () => {
-    navLinks.classList.toggle('active');
-});
+if (mobileMenuBtn) {
+    mobileMenuBtn.addEventListener('click', () => {
+        navLinks.classList.toggle('active');
+    });
+}
 
 // Header scroll effect
 window.addEventListener('scroll', () => {
     const header = document.querySelector('.header');
-    if (window.scrollY > 100) {
-        header.classList.add('scrolled');
-    } else {
-        header.classList.remove('scrolled');
+    if (header) {
+        if (window.scrollY > 100) {
+            header.classList.add('scrolled');
+        } else {
+            header.classList.remove('scrolled');
+        }
     }
 });
 
@@ -24,23 +28,28 @@ class TestimonialSlider {
         this.prevBtn = document.querySelector('.prev-btn');
         this.nextBtn = document.querySelector('.next-btn');
         this.currentSlide = 0;
+        this.autoAdvance = null;
         
         this.init();
     }
     
     init() {
-        this.prevBtn.addEventListener('click', () => this.prevSlide());
-        this.nextBtn.addEventListener('click', () => this.nextSlide());
+        if (this.prevBtn) this.prevBtn.addEventListener('click', () => this.prevSlide());
+        if (this.nextBtn) this.nextBtn.addEventListener('click', () => this.nextSlide());
         
-        this.dots.forEach((dot, index) => {
-            dot.addEventListener('click', () => this.goToSlide(index));
-        });
+        if (this.dots.length) {
+            this.dots.forEach((dot, index) => {
+                dot.addEventListener('click', () => this.goToSlide(index));
+            });
+        }
         
         // Auto-advance slides every 5 seconds
-        setInterval(() => this.nextSlide(), 5000);
+        this.autoAdvance = setInterval(() => this.nextSlide(), 5000);
     }
     
     showSlide(index) {
+        if (!this.slides.length) return;
+        
         // Hide all slides
         this.slides.forEach(slide => {
             slide.classList.remove('active');
@@ -52,8 +61,8 @@ class TestimonialSlider {
         });
         
         // Show current slide and activate corresponding dot
-        this.slides[index].classList.add('active');
-        this.dots[index].classList.add('active');
+        if (this.slides[index]) this.slides[index].classList.add('active');
+        if (this.dots[index]) this.dots[index].classList.add('active');
         
         this.currentSlide = index;
     }
@@ -70,6 +79,11 @@ class TestimonialSlider {
     
     goToSlide(index) {
         this.showSlide(index);
+        // Reset auto-advance timer
+        if (this.autoAdvance) {
+            clearInterval(this.autoAdvance);
+            this.autoAdvance = setInterval(() => this.nextSlide(), 5000);
+        }
     }
 }
 
@@ -83,14 +97,16 @@ class FAQAccordion {
     init() {
         this.faqItems.forEach(item => {
             const question = item.querySelector('.faq-question');
-            question.addEventListener('click', () => this.toggleItem(item));
+            if (question) {
+                question.addEventListener('click', () => this.toggleItem(item));
+            }
         });
     }
     
     toggleItem(item) {
         // Close all other items
         this.faqItems.forEach(otherItem => {
-            if (otherItem !== item) {
+            if (otherItem !== item && otherItem.classList.contains('active')) {
                 otherItem.classList.remove('active');
             }
         });
@@ -139,78 +155,191 @@ class ProductsAnimation {
         this.productCards.forEach(card => {
             const contentCard = card.querySelector('.content-card');
             
-            card.addEventListener('mouseenter', () => {
-                contentCard.style.transform = 'translateY(-8px) scale(1.02)';
-            });
-            
-            card.addEventListener('mouseleave', () => {
-                contentCard.style.transform = 'translateY(0) scale(1)';
-            });
+            if (contentCard) {
+                card.addEventListener('mouseenter', () => {
+                    contentCard.style.transform = 'translateY(-8px) scale(1.02)';
+                });
+                
+                card.addEventListener('mouseleave', () => {
+                    contentCard.style.transform = 'translateY(0) scale(1)';
+                });
+            }
         });
     }
 }
 
-// Enhanced Contact Form Handling
+// FIXED: Enhanced Contact Form Handling
 class ContactForm {
     constructor() {
         this.form = document.getElementById('contactForm');
-        this.init();
+        if (this.form) {
+            this.init();
+        }
     }
     
     init() {
         this.form.addEventListener('submit', (e) => this.handleSubmit(e));
+        
+        // Add real-time validation
+        const inputs = this.form.querySelectorAll('input, textarea');
+        inputs.forEach(input => {
+            input.addEventListener('input', () => {
+                input.style.borderColor = '';
+            });
+        });
     }
     
     handleSubmit(e) {
         e.preventDefault();
         
         // Get form data
-        const formData = new FormData(this.form);
-        const data = {
-            name: formData.get('name'),
-            email: formData.get('email'),
-            phone: formData.get('phone'),
-            service: formData.get('service'),
-            message: formData.get('message')
-        };
+        const name = document.getElementById('name')?.value?.trim() || '';
+        const email = document.getElementById('email')?.value?.trim() || '';
+        const phone = document.getElementById('phone')?.value?.trim() || '';
+        const message = document.getElementById('message')?.value?.trim() || '';
         
-        // Enhanced validation
-        if (!data.name || !data.email || !data.phone || !data.service || !data.message) {
-            this.showMessage('Please fill in all fields', 'error');
-            return;
+        // Enhanced validation - CHECK ALL FIELDS
+        let errors = [];
+        
+        // Check Name
+        if (!name) {
+            errors.push('Please enter your name');
+            this.highlightField('name');
+        } else if (name.length < 2) {
+            errors.push('Name must be at least 2 characters');
+            this.highlightField('name');
+        } else {
+            this.clearHighlight('name');
         }
         
-        if (!this.isValidEmail(data.email)) {
-            this.showMessage('Please enter a valid email address', 'error');
-            return;
+        // Check Email
+        if (!email) {
+            errors.push('Please enter your email address');
+            this.highlightField('email');
+        } else if (!this.isValidEmail(email)) {
+            errors.push('Please enter a valid email address (e.g., name@example.com)');
+            this.highlightField('email');
+        } else {
+            this.clearHighlight('email');
         }
         
-        if (!this.isValidPhone(data.phone)) {
-            this.showMessage('Please enter a valid phone number', 'error');
-            return;
+        // Check Phone - STRICT VALIDATION
+        if (!phone) {
+            errors.push('Please enter your phone number');
+            this.highlightField('phone');
+        } else if (!this.isValidPhone(phone)) {
+            errors.push('Please enter a valid 10-digit phone number');
+            this.highlightField('phone');
+        } else {
+            this.clearHighlight('phone');
         }
         
-        // Simulate form submission
-        this.showMessage('Thank you for your application! We will contact you within 24 hours.', 'success');
-        this.form.reset();
+        // Check Message
+        if (!message) {
+            errors.push('Please enter your message');
+            this.highlightField('message');
+        } else if (message.length < 10) {
+            errors.push('Message must be at least 10 characters');
+            this.highlightField('message');
+        } else {
+            this.clearHighlight('message');
+        }
         
-        // In a real application, you would send the data to a server here
-        console.log('Application submitted:', data);
+        // If there are errors, show them
+        if (errors.length > 0) {
+            this.showMessage(errors.join('. '), 'error');
+            return false;
+        }
+        
+        // All validation passed - Submit the form
+        this.submitForm({ name, email, phone, message });
+        return false;
+    }
+    
+    highlightField(fieldId) {
+        const field = document.getElementById(fieldId);
+        if (field) {
+            field.style.borderColor = '#dc3545';
+            field.style.borderWidth = '2px';
+        }
+    }
+    
+    clearHighlight(fieldId) {
+        const field = document.getElementById(fieldId);
+        if (field) {
+            field.style.borderColor = '';
+            field.style.borderWidth = '';
+        }
     }
     
     isValidEmail(email) {
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const emailRegex = /^[^\s@]+@([^\s@]+\.)+[^\s@]+$/;
         return emailRegex.test(email);
     }
     
     isValidPhone(phone) {
-        const phoneRegex = /^[0-9+\-\s()]{10,}$/;
-        return phoneRegex.test(phone);
+        // Strict validation: exactly 10 digits, no letters, no special chars except + and -
+        const phoneRegex = /^[0-9]{10}$/;
+        return phoneRegex.test(phone.replace(/[\s\-+]/g, ''));
+    }
+    
+    submitForm(data) {
+        const submitBtn = this.form.querySelector('.submit-btn');
+        const originalBtnText = submitBtn.innerHTML;
+        
+        // Show loading state
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
+        
+        // Simulate form submission (replace with actual API call)
+        setTimeout(() => {
+            // Success message
+            this.showMessage('✓ Thank you for your application! Our team will contact you within 24 hours.', 'success');
+            this.form.reset();
+            
+            // Store in localStorage as backup (optional)
+            const submissions = JSON.parse(localStorage.getItem('contactSubmissions') || '[]');
+            submissions.push({ ...data, timestamp: new Date().toISOString() });
+            localStorage.setItem('contactSubmissions', JSON.stringify(submissions));
+            
+            // Reset button
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalBtnText;
+            
+            // Clear highlights
+            ['name', 'email', 'phone', 'message'].forEach(id => {
+                this.clearHighlight(id);
+            });
+            
+        }, 1000);
+        
+        // For actual API submission, use this code:
+        /*
+        fetch('https://your-api-endpoint.com/contact', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => response.json())
+        .then(result => {
+            this.showMessage('✓ Thank you for your application! Our team will contact you within 24 hours.', 'success');
+            this.form.reset();
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalBtnText;
+        })
+        .catch(error => {
+            this.showMessage('❌ Failed to submit. Please try again or call us directly.', 'error');
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalBtnText;
+        });
+        */
     }
     
     showMessage(message, type) {
         // Remove existing messages
-        const existingMessage = document.querySelector('.form-message');
+        const existingMessage = this.form.querySelector('.form-message');
         if (existingMessage) {
             existingMessage.remove();
         }
@@ -225,41 +354,43 @@ class ContactForm {
             border-radius: 8px;
             font-size: 14px;
             text-align: center;
-            ${type === 'success' ? 'background: #D1FAE5; color: #065F46;' : 'background: #FEE2E2; color: #991B1B;'}
+            animation: fadeIn 0.3s ease;
         `;
+        
+        if (type === 'success') {
+            messageElement.style.backgroundColor = '#D1FAE5';
+            messageElement.style.color = '#065F46';
+            messageElement.style.border = '1px solid #34D399';
+        } else {
+            messageElement.style.backgroundColor = '#FEE2E2';
+            messageElement.style.color = '#991B1B';
+            messageElement.style.border = '1px solid #F87171';
+        }
         
         this.form.appendChild(messageElement);
         
         // Remove message after 5 seconds
         setTimeout(() => {
-            messageElement.remove();
+            if (messageElement) messageElement.remove();
         }, 5000);
+        
+        // Scroll to message
+        messageElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
-}
-
-// Enhanced smooth scrolling for contact form
-function scrollToContactForm() {
-    const contactSection = document.getElementById('contact');
-    const headerHeight = document.querySelector('.header').offsetHeight;
-    const targetPosition = contactSection.offsetTop - headerHeight - 20;
-    
-    window.scrollTo({
-        top: targetPosition,
-        behavior: 'smooth'
-    });
 }
 
 // Smooth scrolling for anchor links
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function (e) {
-        e.preventDefault();
-        
         const targetId = this.getAttribute('href');
-        if (targetId === '#') return;
+        if (targetId === '#' || targetId === '') return;
         
         const targetElement = document.querySelector(targetId);
         if (targetElement) {
-            const headerHeight = document.querySelector('.header').offsetHeight;
+            e.preventDefault();
+            
+            const header = document.querySelector('.header');
+            const headerHeight = header ? header.offsetHeight : 80;
             const targetPosition = targetElement.offsetTop - headerHeight - 20;
             
             window.scrollTo({
@@ -268,18 +399,8 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             });
             
             // Close mobile menu if open
-            if (navLinks.classList.contains('active')) {
+            if (navLinks && navLinks.classList.contains('active')) {
                 navLinks.classList.remove('active');
-            }
-            
-            // If scrolling to contact form, focus on first input
-            if (targetId === '#contact') {
-                setTimeout(() => {
-                    const firstInput = document.querySelector('#contactForm input');
-                    if (firstInput) {
-                        firstInput.focus();
-                    }
-                }, 1000);
             }
         }
     });
@@ -317,7 +438,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialize products animation
     new ProductsAnimation();
     
-    // Initialize enhanced contact form
+    // Initialize contact form (FIXED)
     new ContactForm();
     
     // Add animation classes to elements
@@ -350,7 +471,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Close mobile menu when clicking outside
 document.addEventListener('click', (e) => {
-    if (!e.target.closest('.nav') && navLinks.classList.contains('active')) {
+    if (navLinks && !e.target.closest('.nav') && navLinks.classList.contains('active')) {
         navLinks.classList.remove('active');
     }
 });
+
+// Add fade-in animation CSS
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+`;
+document.head.appendChild(style);
