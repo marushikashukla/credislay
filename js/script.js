@@ -43,24 +43,20 @@ class TestimonialSlider {
             });
         }
         
-        // Auto-advance slides every 5 seconds
         this.autoAdvance = setInterval(() => this.nextSlide(), 5000);
     }
     
     showSlide(index) {
         if (!this.slides.length) return;
         
-        // Hide all slides
         this.slides.forEach(slide => {
             slide.classList.remove('active');
         });
         
-        // Remove active class from all dots
         this.dots.forEach(dot => {
             dot.classList.remove('active');
         });
         
-        // Show current slide and activate corresponding dot
         if (this.slides[index]) this.slides[index].classList.add('active');
         if (this.dots[index]) this.dots[index].classList.add('active');
         
@@ -79,7 +75,6 @@ class TestimonialSlider {
     
     goToSlide(index) {
         this.showSlide(index);
-        // Reset auto-advance timer
         if (this.autoAdvance) {
             clearInterval(this.autoAdvance);
             this.autoAdvance = setInterval(() => this.nextSlide(), 5000);
@@ -104,14 +99,11 @@ class FAQAccordion {
     }
     
     toggleItem(item) {
-        // Close all other items
         this.faqItems.forEach(otherItem => {
             if (otherItem !== item && otherItem.classList.contains('active')) {
                 otherItem.classList.remove('active');
             }
         });
-        
-        // Toggle current item
         item.classList.toggle('active');
     }
 }
@@ -154,12 +146,10 @@ class ProductsAnimation {
     setupHoverEffects() {
         this.productCards.forEach(card => {
             const contentCard = card.querySelector('.content-card');
-            
             if (contentCard) {
                 card.addEventListener('mouseenter', () => {
                     contentCard.style.transform = 'translateY(-8px) scale(1.02)';
                 });
-                
                 card.addEventListener('mouseleave', () => {
                     contentCard.style.transform = 'translateY(0) scale(1)';
                 });
@@ -168,7 +158,7 @@ class ProductsAnimation {
     }
 }
 
-// FIXED: Enhanced Contact Form Handling
+// FIXED: Contact Form with Mailto Email (Opens Email Client)
 class ContactForm {
     constructor() {
         this.form = document.getElementById('contactForm');
@@ -180,7 +170,6 @@ class ContactForm {
     init() {
         this.form.addEventListener('submit', (e) => this.handleSubmit(e));
         
-        // Add real-time validation
         const inputs = this.form.querySelectorAll('input, textarea');
         inputs.forEach(input => {
             input.addEventListener('input', () => {
@@ -198,10 +187,9 @@ class ContactForm {
         const phone = document.getElementById('phone')?.value?.trim() || '';
         const message = document.getElementById('message')?.value?.trim() || '';
         
-        // Enhanced validation - CHECK ALL FIELDS
+        // Validation
         let errors = [];
         
-        // Check Name
         if (!name) {
             errors.push('Please enter your name');
             this.highlightField('name');
@@ -212,18 +200,16 @@ class ContactForm {
             this.clearHighlight('name');
         }
         
-        // Check Email
         if (!email) {
             errors.push('Please enter your email address');
             this.highlightField('email');
         } else if (!this.isValidEmail(email)) {
-            errors.push('Please enter a valid email address (e.g., name@example.com)');
+            errors.push('Please enter a valid email address');
             this.highlightField('email');
         } else {
             this.clearHighlight('email');
         }
         
-        // Check Phone - STRICT VALIDATION
         if (!phone) {
             errors.push('Please enter your phone number');
             this.highlightField('phone');
@@ -234,7 +220,6 @@ class ContactForm {
             this.clearHighlight('phone');
         }
         
-        // Check Message
         if (!message) {
             errors.push('Please enter your message');
             this.highlightField('message');
@@ -245,15 +230,51 @@ class ContactForm {
             this.clearHighlight('message');
         }
         
-        // If there are errors, show them
         if (errors.length > 0) {
             this.showMessage(errors.join('. '), 'error');
             return false;
         }
         
-        // All validation passed - Submit the form
-        this.submitForm({ name, email, phone, message });
+        // Open email client with pre-filled details
+        this.openEmailClient({ name, email, phone, message });
         return false;
+    }
+    
+    openEmailClient(data) {
+        const submitBtn = this.form.querySelector('.submit-btn');
+        const originalText = submitBtn.innerHTML;
+        
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Opening Email...';
+        
+        // Create email content
+        const subject = `New Contact Form Submission from ${data.name}`;
+        const body = `Name: ${data.name}%0AEmail: ${data.email}%0APhone: ${data.phone}%0A%0AMessage:%0A${data.message}%0A%0A---%0ASubmitted from CrediSlay Website%0ADate: ${new Date().toLocaleString()}`;
+        
+        // Open default email client
+        window.location.href = `mailto:contact@credislay.com?subject=${encodeURIComponent(subject)}&body=${body}`;
+        
+        // Show success message
+        this.showMessage('✓ Opening your email client. Please click Send to complete submission.', 'success');
+        
+        // Reset form
+        this.form.reset();
+        
+        // Reset button after 2 seconds
+        setTimeout(() => {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalText;
+        }, 2000);
+        
+        // Clear highlights
+        ['name', 'email', 'phone', 'message'].forEach(id => {
+            this.clearHighlight(id);
+        });
+        
+        // Save to localStorage as backup
+        const submissions = JSON.parse(localStorage.getItem('contactSubmissions') || '[]');
+        submissions.push({ ...data, timestamp: new Date().toISOString() });
+        localStorage.setItem('contactSubmissions', JSON.stringify(submissions));
     }
     
     highlightField(fieldId) {
@@ -278,73 +299,16 @@ class ContactForm {
     }
     
     isValidPhone(phone) {
-        // Strict validation: exactly 10 digits, no letters, no special chars except + and -
         const phoneRegex = /^[0-9]{10}$/;
         return phoneRegex.test(phone.replace(/[\s\-+]/g, ''));
     }
     
-    submitForm(data) {
-        const submitBtn = this.form.querySelector('.submit-btn');
-        const originalBtnText = submitBtn.innerHTML;
-        
-        // Show loading state
-        submitBtn.disabled = true;
-        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
-        
-        // Simulate form submission (replace with actual API call)
-        setTimeout(() => {
-            // Success message
-            this.showMessage('✓ Thank you for your application! Our team will contact you within 24 hours.', 'success');
-            this.form.reset();
-            
-            // Store in localStorage as backup (optional)
-            const submissions = JSON.parse(localStorage.getItem('contactSubmissions') || '[]');
-            submissions.push({ ...data, timestamp: new Date().toISOString() });
-            localStorage.setItem('contactSubmissions', JSON.stringify(submissions));
-            
-            // Reset button
-            submitBtn.disabled = false;
-            submitBtn.innerHTML = originalBtnText;
-            
-            // Clear highlights
-            ['name', 'email', 'phone', 'message'].forEach(id => {
-                this.clearHighlight(id);
-            });
-            
-        }, 1000);
-        
-        // For actual API submission, use this code:
-        /*
-        fetch('https://your-api-endpoint.com/contact', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(data)
-        })
-        .then(response => response.json())
-        .then(result => {
-            this.showMessage('✓ Thank you for your application! Our team will contact you within 24 hours.', 'success');
-            this.form.reset();
-            submitBtn.disabled = false;
-            submitBtn.innerHTML = originalBtnText;
-        })
-        .catch(error => {
-            this.showMessage('❌ Failed to submit. Please try again or call us directly.', 'error');
-            submitBtn.disabled = false;
-            submitBtn.innerHTML = originalBtnText;
-        });
-        */
-    }
-    
     showMessage(message, type) {
-        // Remove existing messages
         const existingMessage = this.form.querySelector('.form-message');
         if (existingMessage) {
             existingMessage.remove();
         }
         
-        // Create new message
         const messageElement = document.createElement('div');
         messageElement.className = `form-message form-message-${type}`;
         messageElement.textContent = message;
@@ -369,12 +333,10 @@ class ContactForm {
         
         this.form.appendChild(messageElement);
         
-        // Remove message after 5 seconds
         setTimeout(() => {
             if (messageElement) messageElement.remove();
         }, 5000);
         
-        // Scroll to message
         messageElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
 }
@@ -398,7 +360,6 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
                 behavior: 'smooth'
             });
             
-            // Close mobile menu if open
             if (navLinks && navLinks.classList.contains('active')) {
                 navLinks.classList.remove('active');
             }
@@ -421,27 +382,17 @@ const observer = new IntersectionObserver((entries) => {
     });
 }, observerOptions);
 
-// Image loading fallback
 function handleImageError(img) {
     console.log('Image failed to load:', img.src);
-    // You could set a placeholder image here if needed
 }
 
 // Initialize when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
-    // Initialize testimonial slider
     new TestimonialSlider();
-    
-    // Initialize FAQ accordion
     new FAQAccordion();
-    
-    // Initialize products animation
     new ProductsAnimation();
-    
-    // Initialize contact form (FIXED)
     new ContactForm();
     
-    // Add animation classes to elements
     const animatedElements = document.querySelectorAll('.feature-card, .card, .process-step, .product-card, .mini-feature-card');
     animatedElements.forEach(el => {
         el.style.opacity = '0';
@@ -450,19 +401,16 @@ document.addEventListener('DOMContentLoaded', () => {
         observer.observe(el);
     });
     
-    // Add hover effects to cards
     const cards = document.querySelectorAll('.feature-card, .card, .mini-feature-card');
     cards.forEach(card => {
         card.addEventListener('mouseenter', () => {
             card.style.transform = 'translateY(-10px)';
         });
-        
         card.addEventListener('mouseleave', () => {
             card.style.transform = 'translateY(0)';
         });
     });
     
-    // Add error handling for images
     const images = document.querySelectorAll('img');
     images.forEach(img => {
         img.addEventListener('error', () => handleImageError(img));
