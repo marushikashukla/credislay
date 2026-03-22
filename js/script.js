@@ -515,3 +515,199 @@ style.textContent = `
 document.head.appendChild(style);
 
 console.log('Script loaded successfully');
+
+// ============================================
+// 2026 FIN TECH ENHANCEMENTS
+// ============================================
+
+// Ripple Effect for Buttons
+function createRipple(event) {
+    const button = event.currentTarget;
+    const ripple = document.createElement('span');
+    const rect = button.getBoundingClientRect();
+    const size = Math.max(rect.width, rect.height);
+    const x = event.clientX - rect.left - size / 2;
+    const y = event.clientY - rect.top - size / 2;
+    
+    ripple.classList.add('ripple');
+    ripple.style.width = ripple.style.height = `${size}px`;
+    ripple.style.left = `${x}px`;
+    ripple.style.top = `${y}px`;
+    
+    button.style.position = 'relative';
+    button.style.overflow = 'hidden';
+    
+    ripple.addEventListener('animationend', () => {
+        ripple.remove();
+    });
+    
+    button.appendChild(ripple);
+}
+
+// Add ripple effect to all buttons
+document.querySelectorAll('.cta-button, .submit-btn, .product-cta, .learn-more, .footer-cta, .slider-btn').forEach(button => {
+    button.addEventListener('click', createRipple);
+});
+
+// Parallax Effect on Scroll
+window.addEventListener('scroll', () => {
+    const scrolled = window.pageYOffset;
+    const heroContent = document.querySelector('.hero-content');
+    const statsBar = document.querySelector('.stats-bar');
+    
+    if (heroContent) {
+        heroContent.style.transform = `translateY(${scrolled * 0.3}px)`;
+        heroContent.style.opacity = 1 - scrolled / 500;
+    }
+    
+    if (statsBar) {
+        statsBar.style.transform = `translateY(${scrolled * 0.2}px)`;
+    }
+});
+
+// Intersection Observer for Counter Animation
+const counterObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            const counters = entry.target.querySelectorAll('.stat-number');
+            counters.forEach(counter => {
+                const target = parseInt(counter.innerText);
+                if (!isNaN(target)) {
+                    let current = 0;
+                    const increment = target / 50;
+                    const updateCounter = () => {
+                        if (current < target) {
+                            current += increment;
+                            if (current > target) current = target;
+                            counter.innerText = Math.floor(current) + (counter.innerText.includes('+') ? '+' : '');
+                            requestAnimationFrame(updateCounter);
+                        }
+                    };
+                    updateCounter();
+                }
+            });
+            counterObserver.unobserve(entry.target);
+        }
+    });
+}, { threshold: 0.5 });
+
+const statsBar = document.querySelector('.stats-bar');
+if (statsBar) {
+    counterObserver.observe(statsBar);
+}
+
+// Glow Effect on Card Hover
+document.querySelectorAll('.card, .feature-card, .product-card, .mini-feature-card').forEach(card => {
+    card.addEventListener('mousemove', (e) => {
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        
+        const centerX = rect.width / 2;
+        const centerY = rect.height / 2;
+        
+        const rotateX = (y - centerY) / 20;
+        const rotateY = (centerX - x) / 20;
+        
+        card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-5px)`;
+    });
+    
+    card.addEventListener('mouseleave', () => {
+        card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(0)';
+    });
+});
+
+// Typing Effect for Hero Title (Optional)
+const heroTitle = document.querySelector('.hero-title');
+if (heroTitle) {
+    const originalText = heroTitle.innerText;
+    heroTitle.style.opacity = '0';
+    
+    setTimeout(() => {
+        let i = 0;
+        heroTitle.innerText = '';
+        heroTitle.style.opacity = '1';
+        
+        const typeWriter = () => {
+            if (i < originalText.length) {
+                heroTitle.innerText += originalText.charAt(i);
+                i++;
+                setTimeout(typeWriter, 50);
+            }
+        };
+        
+        typeWriter();
+    }, 500);
+}
+
+// Smooth Page Transitions
+document.body.style.opacity = '0';
+document.body.style.transition = 'opacity 0.5s ease';
+
+window.addEventListener('load', () => {
+    document.body.style.opacity = '1';
+});
+
+// Dynamic Background Gradient Animation
+let hue = 0;
+setInterval(() => {
+    const hero = document.querySelector('.hero');
+    if (hero && window.scrollY < 100) {
+        hue = (hue + 1) % 360;
+        hero.style.background = `linear-gradient(135deg, 
+            hsl(${hue}, 50%, 8%) 0%, 
+            hsl(${hue + 20}, 40%, 12%) 50%, 
+            hsl(${hue + 40}, 30%, 10%) 100%)`;
+    }
+}, 100);
+
+// Newsletter Signup (if you add one later)
+// Preloader (Optional)
+const preloader = document.createElement('div');
+preloader.style.cssText = `
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    transition: opacity 0.5s ease;
+`;
+
+const loader = document.createElement('div');
+loader.style.cssText = `
+    width: 50px;
+    height: 50px;
+    border: 3px solid rgba(0, 122, 255, 0.3);
+    border-top-color: #007AFF;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+`;
+
+const stylePreloader = document.createElement('style');
+stylePreloader.textContent = `
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+`;
+
+document.head.appendChild(stylePreloader);
+preloader.appendChild(loader);
+document.body.appendChild(preloader);
+
+window.addEventListener('load', () => {
+    setTimeout(() => {
+        preloader.style.opacity = '0';
+        setTimeout(() => {
+            preloader.remove();
+        }, 500);
+    }, 500);
+});
+
+// Console Welcome Message
+console.log('%c🚀 CrediSlay v2026 | Fintech Redefined', 'color: #007AFF; font-size: 16px; font-weight: bold;');
+console.log('%c✨ Smarter Business Credit, Simplified.', 'color: #00D4FF; font-size: 14px;');
