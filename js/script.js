@@ -158,7 +158,7 @@ class ProductsAnimation {
     }
 }
 
-// FIXED: Contact Form with Mailto Email (Opens Email Client)
+// Contact Form with Mailto Email (Opens Email Client)
 class ContactForm {
     constructor() {
         this.form = document.getElementById('contactForm');
@@ -341,8 +341,70 @@ class ContactForm {
     }
 }
 
-// Smooth scrolling for anchor links
-document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+// ============ FIX: Product "Get Started" Buttons ============
+function handleProductCTA() {
+    const productButtons = document.querySelectorAll('.product-cta');
+    console.log('Found product buttons:', productButtons.length);
+    
+    productButtons.forEach((button, index) => {
+        // Remove any existing click listeners to prevent duplicates
+        const newButton = button.cloneNode(true);
+        button.parentNode.replaceChild(newButton, button);
+        
+        newButton.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            console.log('Product button clicked:', index);
+            
+            const contactSection = document.getElementById('contact');
+            const header = document.querySelector('.header');
+            const headerHeight = header ? header.offsetHeight : 80;
+            
+            if (contactSection) {
+                const targetPosition = contactSection.offsetTop - headerHeight - 20;
+                window.scrollTo({
+                    top: targetPosition,
+                    behavior: 'smooth'
+                });
+            } else {
+                console.error('Contact section not found!');
+                // Fallback - try to find by class
+                const fallbackContact = document.querySelector('.contact-form-section');
+                if (fallbackContact) {
+                    fallbackContact.scrollIntoView({ behavior: 'smooth' });
+                }
+            }
+        });
+    });
+}
+
+// Fix all anchor links to contact section
+function fixAllAnchorLinks() {
+    const allAnchors = document.querySelectorAll('a[href="#contact"], a[href="#contact-form"], a[href="#contact-section"]');
+    allAnchors.forEach(anchor => {
+        // Skip if it's already a product-cta (handled separately)
+        if (anchor.classList.contains('product-cta')) return;
+        
+        anchor.addEventListener('click', function(e) {
+            e.preventDefault();
+            const contactSection = document.getElementById('contact');
+            const header = document.querySelector('.header');
+            const headerHeight = header ? header.offsetHeight : 80;
+            
+            if (contactSection) {
+                const targetPosition = contactSection.offsetTop - headerHeight - 20;
+                window.scrollTo({
+                    top: targetPosition,
+                    behavior: 'smooth'
+                });
+            }
+        });
+    });
+}
+
+// Smooth scrolling for all anchor links
+document.querySelectorAll('a[href^="#"]:not(.product-cta)').forEach(anchor => {
     anchor.addEventListener('click', function (e) {
         const targetId = this.getAttribute('href');
         if (targetId === '#' || targetId === '') return;
@@ -388,11 +450,19 @@ function handleImageError(img) {
 
 // Initialize when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
+    console.log('DOM fully loaded');
+    
+    // Initialize all classes
     new TestimonialSlider();
     new FAQAccordion();
     new ProductsAnimation();
     new ContactForm();
     
+    // Fix product CTA buttons
+    handleProductCTA();
+    fixAllAnchorLinks();
+    
+    // Add animation classes to elements
     const animatedElements = document.querySelectorAll('.feature-card, .card, .process-step, .product-card, .mini-feature-card');
     animatedElements.forEach(el => {
         el.style.opacity = '0';
@@ -401,6 +471,7 @@ document.addEventListener('DOMContentLoaded', () => {
         observer.observe(el);
     });
     
+    // Add hover effects to cards
     const cards = document.querySelectorAll('.feature-card, .card, .mini-feature-card');
     cards.forEach(card => {
         card.addEventListener('mouseenter', () => {
@@ -411,10 +482,13 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
     
+    // Add error handling for images
     const images = document.querySelectorAll('img');
     images.forEach(img => {
         img.addEventListener('error', () => handleImageError(img));
     });
+    
+    console.log('All initializations complete');
 });
 
 // Close mobile menu when clicking outside
@@ -439,3 +513,5 @@ style.textContent = `
     }
 `;
 document.head.appendChild(style);
+
+console.log('Script loaded successfully');
