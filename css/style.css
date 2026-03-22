@@ -421,7 +421,7 @@ section {
     transform: translateY(-2px);
 }
 
-/* 3+4 Centered Grid Layout with Icons - COMPLETE */
+/* 3+4 Centered Grid Layout with Font Awesome Icons */
 .mini-features-grid {
     display: flex;
     justify-content: center;
@@ -476,10 +476,13 @@ section {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.4rem;
     flex-shrink: 0;
-    color: white;
     box-shadow: 0 4px 8px rgba(0, 122, 255, 0.2);
+}
+
+.mini-feature-card .feature-icon i {
+    font-size: 1.4rem;
+    color: white;
 }
 
 .mini-feature-card span {
@@ -504,6 +507,9 @@ section {
     .mini-feature-card .feature-icon {
         width: 44px;
         height: 44px;
+    }
+    
+    .mini-feature-card .feature-icon i {
         font-size: 1.2rem;
     }
     
@@ -528,7 +534,8 @@ section {
         gap: 12px;
         padding: 0 15px;
     }
-}
+} 
+
 /* Products Deep-Dive Section */
 .products-header {
     margin-bottom: 60px;
