@@ -1,3 +1,8 @@
+// ============================================
+// CREDISLAY - MODERN FINTECH WEBSITE 2026
+// Enhanced Interactions & Animations
+// ============================================
+
 // Mobile Menu Toggle
 const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
 const navLinks = document.querySelector('.nav-links');
@@ -20,7 +25,9 @@ window.addEventListener('scroll', () => {
     }
 });
 
-// Testimonial Slider
+// ============================================
+// TESTIMONIAL SLIDER
+// ============================================
 class TestimonialSlider {
     constructor() {
         this.slides = document.querySelectorAll('.testimonial-card');
@@ -30,7 +37,9 @@ class TestimonialSlider {
         this.currentSlide = 0;
         this.autoAdvance = null;
         
-        this.init();
+        if (this.slides.length) {
+            this.init();
+        }
     }
     
     init() {
@@ -82,11 +91,15 @@ class TestimonialSlider {
     }
 }
 
-// FAQ Accordion Functionality
+// ============================================
+// FAQ ACCORDION
+// ============================================
 class FAQAccordion {
     constructor() {
         this.faqItems = document.querySelectorAll('.faq-item');
-        this.init();
+        if (this.faqItems.length) {
+            this.init();
+        }
     }
     
     init() {
@@ -108,11 +121,15 @@ class FAQAccordion {
     }
 }
 
-// Products Section Animation
+// ============================================
+// PRODUCTS ANIMATION
+// ============================================
 class ProductsAnimation {
     constructor() {
         this.productCards = document.querySelectorAll('.product-card');
-        this.init();
+        if (this.productCards.length) {
+            this.init();
+        }
     }
     
     init() {
@@ -158,7 +175,9 @@ class ProductsAnimation {
     }
 }
 
-// Contact Form with Mailto Email (Opens Email Client)
+// ============================================
+// CONTACT FORM WITH MAILTO
+// ============================================
 class ContactForm {
     constructor() {
         this.form = document.getElementById('contactForm');
@@ -181,13 +200,11 @@ class ContactForm {
     handleSubmit(e) {
         e.preventDefault();
         
-        // Get form data
         const name = document.getElementById('name')?.value?.trim() || '';
         const email = document.getElementById('email')?.value?.trim() || '';
         const phone = document.getElementById('phone')?.value?.trim() || '';
         const message = document.getElementById('message')?.value?.trim() || '';
         
-        // Validation
         let errors = [];
         
         if (!name) {
@@ -235,7 +252,6 @@ class ContactForm {
             return false;
         }
         
-        // Open email client with pre-filled details
         this.openEmailClient({ name, email, phone, message });
         return false;
     }
@@ -247,31 +263,23 @@ class ContactForm {
         submitBtn.disabled = true;
         submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Opening Email...';
         
-        // Create email content
         const subject = `New Contact Form Submission from ${data.name}`;
         const body = `Name: ${data.name}%0AEmail: ${data.email}%0APhone: ${data.phone}%0A%0AMessage:%0A${data.message}%0A%0A---%0ASubmitted from CrediSlay Website%0ADate: ${new Date().toLocaleString()}`;
         
-        // Open default email client
         window.location.href = `mailto:contact@credislay.com?subject=${encodeURIComponent(subject)}&body=${body}`;
         
-        // Show success message
         this.showMessage('✓ Opening your email client. Please click Send to complete submission.', 'success');
-        
-        // Reset form
         this.form.reset();
         
-        // Reset button after 2 seconds
         setTimeout(() => {
             submitBtn.disabled = false;
             submitBtn.innerHTML = originalText;
         }, 2000);
         
-        // Clear highlights
         ['name', 'email', 'phone', 'message'].forEach(id => {
             this.clearHighlight(id);
         });
         
-        // Save to localStorage as backup
         const submissions = JSON.parse(localStorage.getItem('contactSubmissions') || '[]');
         submissions.push({ ...data, timestamp: new Date().toISOString() });
         localStorage.setItem('contactSubmissions', JSON.stringify(submissions));
@@ -305,9 +313,7 @@ class ContactForm {
     
     showMessage(message, type) {
         const existingMessage = this.form.querySelector('.form-message');
-        if (existingMessage) {
-            existingMessage.remove();
-        }
+        if (existingMessage) existingMessage.remove();
         
         const messageElement = document.createElement('div');
         messageElement.className = `form-message form-message-${type}`;
@@ -341,70 +347,36 @@ class ContactForm {
     }
 }
 
-// ============ FIX: Product "Get Started" Buttons ============
-function handleProductCTA() {
-    const productButtons = document.querySelectorAll('.product-cta');
-    console.log('Found product buttons:', productButtons.length);
+// ============================================
+// RIPPLE EFFECT FOR BUTTONS
+// ============================================
+function createRipple(event) {
+    const button = event.currentTarget;
+    const ripple = document.createElement('span');
+    const rect = button.getBoundingClientRect();
+    const size = Math.max(rect.width, rect.height);
+    const x = event.clientX - rect.left - size / 2;
+    const y = event.clientY - rect.top - size / 2;
     
-    productButtons.forEach((button, index) => {
-        // Remove any existing click listeners to prevent duplicates
-        const newButton = button.cloneNode(true);
-        button.parentNode.replaceChild(newButton, button);
-        
-        newButton.addEventListener('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            
-            console.log('Product button clicked:', index);
-            
-            const contactSection = document.getElementById('contact');
-            const header = document.querySelector('.header');
-            const headerHeight = header ? header.offsetHeight : 80;
-            
-            if (contactSection) {
-                const targetPosition = contactSection.offsetTop - headerHeight - 20;
-                window.scrollTo({
-                    top: targetPosition,
-                    behavior: 'smooth'
-                });
-            } else {
-                console.error('Contact section not found!');
-                // Fallback - try to find by class
-                const fallbackContact = document.querySelector('.contact-form-section');
-                if (fallbackContact) {
-                    fallbackContact.scrollIntoView({ behavior: 'smooth' });
-                }
-            }
-        });
+    ripple.classList.add('ripple');
+    ripple.style.width = ripple.style.height = `${size}px`;
+    ripple.style.left = `${x}px`;
+    ripple.style.top = `${y}px`;
+    
+    button.style.position = 'relative';
+    button.style.overflow = 'hidden';
+    
+    ripple.addEventListener('animationend', () => {
+        ripple.remove();
     });
+    
+    button.appendChild(ripple);
 }
 
-// Fix all anchor links to contact section
-function fixAllAnchorLinks() {
-    const allAnchors = document.querySelectorAll('a[href="#contact"], a[href="#contact-form"], a[href="#contact-section"]');
-    allAnchors.forEach(anchor => {
-        // Skip if it's already a product-cta (handled separately)
-        if (anchor.classList.contains('product-cta')) return;
-        
-        anchor.addEventListener('click', function(e) {
-            e.preventDefault();
-            const contactSection = document.getElementById('contact');
-            const header = document.querySelector('.header');
-            const headerHeight = header ? header.offsetHeight : 80;
-            
-            if (contactSection) {
-                const targetPosition = contactSection.offsetTop - headerHeight - 20;
-                window.scrollTo({
-                    top: targetPosition,
-                    behavior: 'smooth'
-                });
-            }
-        });
-    });
-}
-
-// Smooth scrolling for all anchor links
-document.querySelectorAll('a[href^="#"]:not(.product-cta)').forEach(anchor => {
+// ============================================
+// SMOOTH SCROLLING FOR ANCHOR LINKS
+// ============================================
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function (e) {
         const targetId = this.getAttribute('href');
         if (targetId === '#' || targetId === '') return;
@@ -429,7 +401,9 @@ document.querySelectorAll('a[href^="#"]:not(.product-cta)').forEach(anchor => {
     });
 });
 
-// Animation on scroll
+// ============================================
+// INTERSECTION OBSERVER FOR ANIMATIONS
+// ============================================
 const observerOptions = {
     threshold: 0.1,
     rootMargin: '0px 0px -50px 0px'
@@ -444,13 +418,207 @@ const observer = new IntersectionObserver((entries) => {
     });
 }, observerOptions);
 
-function handleImageError(img) {
-    console.log('Image failed to load:', img.src);
+// ============================================
+// NUMBER COUNTER ANIMATION
+// ============================================
+function animateNumbers() {
+    const counters = document.querySelectorAll('.stat-number');
+    
+    const counterObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const counter = entry.target;
+                const targetText = counter.innerText;
+                const target = parseInt(targetText);
+                
+                if (!isNaN(target)) {
+                    let current = 0;
+                    const increment = target / 50;
+                    const updateCounter = () => {
+                        if (current < target) {
+                            current += increment;
+                            if (current > target) current = target;
+                            counter.innerText = Math.floor(current) + (targetText.includes('+') ? '+' : '');
+                            requestAnimationFrame(updateCounter);
+                        }
+                    };
+                    updateCounter();
+                }
+                counterObserver.unobserve(counter);
+            }
+        });
+    }, { threshold: 0.5 });
+    
+    counters.forEach(counter => {
+        counterObserver.observe(counter);
+    });
 }
 
-// Initialize when DOM is loaded
+// ============================================
+// 3D CARD HOVER EFFECT
+// ============================================
+function init3DCards() {
+    const cards = document.querySelectorAll('.card, .feature-card, .product-card, .mini-feature-card');
+    
+    cards.forEach(card => {
+        card.addEventListener('mousemove', (e) => {
+            const rect = card.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            const centerX = rect.width / 2;
+            const centerY = rect.height / 2;
+            
+            const rotateX = (y - centerY) / 25;
+            const rotateY = (centerX - x) / 25;
+            
+            card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-5px)`;
+        });
+        
+        card.addEventListener('mouseleave', () => {
+            card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(0)';
+        });
+    });
+}
+
+// ============================================
+// PARALLAX SCROLL EFFECT
+// ============================================
+function initParallax() {
+    window.addEventListener('scroll', () => {
+        const scrolled = window.pageYOffset;
+        const heroContent = document.querySelector('.hero-content');
+        const statsBar = document.querySelector('.stats-bar');
+        
+        if (heroContent && scrolled < 800) {
+            heroContent.style.transform = `translateY(${scrolled * 0.2}px)`;
+            heroContent.style.opacity = 1 - scrolled / 800;
+        }
+        
+        if (statsBar && scrolled < 600) {
+            statsBar.style.transform = `translateY(${scrolled * 0.1}px)`;
+        }
+    });
+}
+
+// ============================================
+// DYNAMIC BACKGROUND GRADIENT
+// ============================================
+function initDynamicGradient() {
+    let hue = 0;
+    const hero = document.querySelector('.hero');
+    
+    if (hero) {
+        setInterval(() => {
+            if (window.scrollY < 100) {
+                hue = (hue + 0.5) % 360;
+                hero.style.background = `linear-gradient(135deg, 
+                    hsl(${hue}, 60%, 8%) 0%, 
+                    hsl(${hue + 20}, 50%, 12%) 30%, 
+                    hsl(${hue + 40}, 40%, 10%) 70%,
+                    hsl(${hue + 20}, 50%, 8%) 100%)`;
+            }
+        }, 100);
+    }
+}
+
+// ============================================
+// PRELOADER
+// ============================================
+function initPreloader() {
+    const preloader = document.createElement('div');
+    preloader.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: #000000;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+        transition: opacity 0.6s ease;
+    `;
+    
+    const loader = document.createElement('div');
+    loader.style.cssText = `
+        width: 60px;
+        height: 60px;
+        border: 3px solid rgba(0, 122, 255, 0.2);
+        border-top-color: #007AFF;
+        border-right-color: #00D4FF;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+    `;
+    
+    const style = document.createElement('style');
+    style.textContent = `@keyframes spin { to { transform: rotate(360deg); } }`;
+    document.head.appendChild(style);
+    
+    preloader.appendChild(loader);
+    document.body.appendChild(preloader);
+    
+    window.addEventListener('load', () => {
+        setTimeout(() => {
+            preloader.style.opacity = '0';
+            setTimeout(() => {
+                preloader.remove();
+            }, 600);
+        }, 500);
+    });
+}
+
+// ============================================
+// CONSOLE WELCOME MESSAGE
+// ============================================
+function showWelcomeMessage() {
+    console.log('%c🚀 CrediSlay v2026 | Fintech Redefined', 'color: #007AFF; font-size: 18px; font-weight: bold;');
+    console.log('%c✨ Smarter Business Credit, Simplified.', 'color: #00D4FF; font-size: 14px;');
+    console.log('%c⚡ Powered by Innovation | Built for Growth', 'color: #FFFFFF; font-size: 12px;');
+}
+
+// ============================================
+// ADD RIPPLE STYLES
+// ============================================
+function addRippleStyles() {
+    const style = document.createElement('style');
+    style.textContent = `
+        .ripple {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.7);
+            transform: scale(0);
+            animation: rippleEffect 0.6s linear;
+            pointer-events: none;
+        }
+        
+        @keyframes rippleEffect {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    `;
+    document.head.appendChild(style);
+}
+
+// ============================================
+// INITIALIZE ALL
+// ============================================
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('DOM fully loaded');
+    console.log('🚀 CrediSlay - Initializing...');
     
     // Initialize all classes
     new TestimonialSlider();
@@ -458,12 +626,21 @@ document.addEventListener('DOMContentLoaded', () => {
     new ProductsAnimation();
     new ContactForm();
     
-    // Fix product CTA buttons
-    handleProductCTA();
-    fixAllAnchorLinks();
+    // Initialize enhancements
+    animateNumbers();
+    init3DCards();
+    initParallax();
+    initDynamicGradient();
+    addRippleStyles();
+    showWelcomeMessage();
+    
+    // Add ripple effect to buttons
+    document.querySelectorAll('.cta-button, .submit-btn, .product-cta, .learn-more, .footer-cta, .slider-btn').forEach(button => {
+        button.addEventListener('click', createRipple);
+    });
     
     // Add animation classes to elements
-    const animatedElements = document.querySelectorAll('.feature-card, .card, .process-step, .product-card, .mini-feature-card');
+    const animatedElements = document.querySelectorAll('.feature-card, .card, .process-step, .product-card, .mini-feature-card, .stat-item');
     animatedElements.forEach(el => {
         el.style.opacity = '0';
         el.style.transform = 'translateY(30px)';
@@ -475,20 +652,22 @@ document.addEventListener('DOMContentLoaded', () => {
     const cards = document.querySelectorAll('.feature-card, .card, .mini-feature-card');
     cards.forEach(card => {
         card.addEventListener('mouseenter', () => {
-            card.style.transform = 'translateY(-10px)';
+            card.style.transform = 'translateY(-8px)';
         });
         card.addEventListener('mouseleave', () => {
             card.style.transform = 'translateY(0)';
         });
     });
     
-    // Add error handling for images
+    // Image error handling
     const images = document.querySelectorAll('img');
     images.forEach(img => {
-        img.addEventListener('error', () => handleImageError(img));
+        img.addEventListener('error', () => {
+            console.log('Image failed to load:', img.src);
+        });
     });
     
-    console.log('All initializations complete');
+    console.log('✅ All systems operational. CrediSlay is ready!');
 });
 
 // Close mobile menu when clicking outside
@@ -498,216 +677,20 @@ document.addEventListener('click', (e) => {
     }
 });
 
-// Add fade-in animation CSS
-const style = document.createElement('style');
-style.textContent = `
-    @keyframes fadeIn {
-        from {
-            opacity: 0;
-            transform: translateY(-10px);
+// Preloader - Start after DOM loads
+window.addEventListener('DOMContentLoaded', () => {
+    initPreloader();
+});
+
+// Add fade-in animation keyframes if not exists
+if (!document.querySelector('#fadeInKeyframes')) {
+    const style = document.createElement('style');
+    style.id = 'fadeInKeyframes';
+    style.textContent = `
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-`;
-document.head.appendChild(style);
-
-console.log('Script loaded successfully');
-
-// ============================================
-// 2026 FIN TECH ENHANCEMENTS
-// ============================================
-
-// Ripple Effect for Buttons
-function createRipple(event) {
-    const button = event.currentTarget;
-    const ripple = document.createElement('span');
-    const rect = button.getBoundingClientRect();
-    const size = Math.max(rect.width, rect.height);
-    const x = event.clientX - rect.left - size / 2;
-    const y = event.clientY - rect.top - size / 2;
-    
-    ripple.classList.add('ripple');
-    ripple.style.width = ripple.style.height = `${size}px`;
-    ripple.style.left = `${x}px`;
-    ripple.style.top = `${y}px`;
-    
-    button.style.position = 'relative';
-    button.style.overflow = 'hidden';
-    
-    ripple.addEventListener('animationend', () => {
-        ripple.remove();
-    });
-    
-    button.appendChild(ripple);
+    `;
+    document.head.appendChild(style);
 }
-
-// Add ripple effect to all buttons
-document.querySelectorAll('.cta-button, .submit-btn, .product-cta, .learn-more, .footer-cta, .slider-btn').forEach(button => {
-    button.addEventListener('click', createRipple);
-});
-
-// Parallax Effect on Scroll
-window.addEventListener('scroll', () => {
-    const scrolled = window.pageYOffset;
-    const heroContent = document.querySelector('.hero-content');
-    const statsBar = document.querySelector('.stats-bar');
-    
-    if (heroContent) {
-        heroContent.style.transform = `translateY(${scrolled * 0.3}px)`;
-        heroContent.style.opacity = 1 - scrolled / 500;
-    }
-    
-    if (statsBar) {
-        statsBar.style.transform = `translateY(${scrolled * 0.2}px)`;
-    }
-});
-
-// Intersection Observer for Counter Animation
-const counterObserver = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-        if (entry.isIntersecting) {
-            const counters = entry.target.querySelectorAll('.stat-number');
-            counters.forEach(counter => {
-                const target = parseInt(counter.innerText);
-                if (!isNaN(target)) {
-                    let current = 0;
-                    const increment = target / 50;
-                    const updateCounter = () => {
-                        if (current < target) {
-                            current += increment;
-                            if (current > target) current = target;
-                            counter.innerText = Math.floor(current) + (counter.innerText.includes('+') ? '+' : '');
-                            requestAnimationFrame(updateCounter);
-                        }
-                    };
-                    updateCounter();
-                }
-            });
-            counterObserver.unobserve(entry.target);
-        }
-    });
-}, { threshold: 0.5 });
-
-const statsBar = document.querySelector('.stats-bar');
-if (statsBar) {
-    counterObserver.observe(statsBar);
-}
-
-// Glow Effect on Card Hover
-document.querySelectorAll('.card, .feature-card, .product-card, .mini-feature-card').forEach(card => {
-    card.addEventListener('mousemove', (e) => {
-        const rect = card.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-        
-        const centerX = rect.width / 2;
-        const centerY = rect.height / 2;
-        
-        const rotateX = (y - centerY) / 20;
-        const rotateY = (centerX - x) / 20;
-        
-        card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-5px)`;
-    });
-    
-    card.addEventListener('mouseleave', () => {
-        card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(0)';
-    });
-});
-
-// Typing Effect for Hero Title (Optional)
-const heroTitle = document.querySelector('.hero-title');
-if (heroTitle) {
-    const originalText = heroTitle.innerText;
-    heroTitle.style.opacity = '0';
-    
-    setTimeout(() => {
-        let i = 0;
-        heroTitle.innerText = '';
-        heroTitle.style.opacity = '1';
-        
-        const typeWriter = () => {
-            if (i < originalText.length) {
-                heroTitle.innerText += originalText.charAt(i);
-                i++;
-                setTimeout(typeWriter, 50);
-            }
-        };
-        
-        typeWriter();
-    }, 500);
-}
-
-// Smooth Page Transitions
-document.body.style.opacity = '0';
-document.body.style.transition = 'opacity 0.5s ease';
-
-window.addEventListener('load', () => {
-    document.body.style.opacity = '1';
-});
-
-// Dynamic Background Gradient Animation
-let hue = 0;
-setInterval(() => {
-    const hero = document.querySelector('.hero');
-    if (hero && window.scrollY < 100) {
-        hue = (hue + 1) % 360;
-        hero.style.background = `linear-gradient(135deg, 
-            hsl(${hue}, 50%, 8%) 0%, 
-            hsl(${hue + 20}, 40%, 12%) 50%, 
-            hsl(${hue + 40}, 30%, 10%) 100%)`;
-    }
-}, 100);
-
-// Newsletter Signup (if you add one later)
-// Preloader (Optional)
-const preloader = document.createElement('div');
-preloader.style.cssText = `
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: #000;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 9999;
-    transition: opacity 0.5s ease;
-`;
-
-const loader = document.createElement('div');
-loader.style.cssText = `
-    width: 50px;
-    height: 50px;
-    border: 3px solid rgba(0, 122, 255, 0.3);
-    border-top-color: #007AFF;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-`;
-
-const stylePreloader = document.createElement('style');
-stylePreloader.textContent = `
-    @keyframes spin {
-        to { transform: rotate(360deg); }
-    }
-`;
-
-document.head.appendChild(stylePreloader);
-preloader.appendChild(loader);
-document.body.appendChild(preloader);
-
-window.addEventListener('load', () => {
-    setTimeout(() => {
-        preloader.style.opacity = '0';
-        setTimeout(() => {
-            preloader.remove();
-        }, 500);
-    }, 500);
-});
-
-// Console Welcome Message
-console.log('%c🚀 CrediSlay v2026 | Fintech Redefined', 'color: #007AFF; font-size: 16px; font-weight: bold;');
-console.log('%c✨ Smarter Business Credit, Simplified.', 'color: #00D4FF; font-size: 14px;');
